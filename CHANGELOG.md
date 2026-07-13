@@ -1,11 +1,15 @@
 # Changelog
 
-## [0.1.0] - 2026-07-12
+Toutes les évolutions significatives du projet sont consignées dans ce fichier.
 
-### Added
-- Initial repository structure.
-- README and contribution guide.
-- Chapter 1 source in Markdown.
-- Printable PDF of Chapter 1, parts 1 and 2.
-- SQL example schema.
-- Exercise sheet.
+## [0.2.1] - 2026-07-13
+
+### Ajouté
+
+- structure initiale du dépôt ;
+- documentation principale ;
+- table des matières générale ;
+- guide éditorial et conventions SQL ;
+- modèles de chapitre, d'exercices et de QCM ;
+- préface initiale ;
+- PDF de présentation de la release.

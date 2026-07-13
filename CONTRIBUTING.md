@@ -1,15 +1,39 @@
-# Contribuer
+# Contribuer au handbook
 
-## Regles editoriales
+## Principes
 
-- Rediger en francais clair.
-- Utiliser des exemples compatibles Oracle SQL.
-- Distinguer la norme SQL des comportements propres a Oracle.
-- Verifier les affirmations techniques dans la documentation officielle.
-- Ne pas reproduire de questions d'examen confidentielles.
+Toute contribution doit être :
 
-## Nommage
+- techniquement exacte ;
+- compréhensible sans connaissance implicite ;
+- compatible avec Oracle SQL ;
+- originale et correctement sourcée ;
+- rédigée en français clair.
 
-- Chapitres : `chapter-XX.md`
-- PDF : `Oracle_SQL_Handbook_2026_Chapitre_XX_vX.Y.pdf`
-- Exemples : `chXX_nom_exemple.sql`
+## Proposition de modification
+
+1. créer une branche dédiée ;
+2. modifier un nombre limité de fichiers ;
+3. vérifier les exemples SQL ;
+4. décrire clairement la modification dans le commit ;
+5. ouvrir une pull request.
+
+## Format des commits
+
+Exemples :
+
+```text
+Ajout du modèle de QCM
+Correction de l'exemple sur les clés étrangères
+Mise à jour de la table des matières
+```
+
+## Relecture
+
+Avant publication, vérifier :
+
+- la cohérence des titres ;
+- la terminologie Oracle ;
+- les accents et caractères spéciaux ;
+- la validité des requêtes SQL ;
+- l'absence de contenu protégé recopié.

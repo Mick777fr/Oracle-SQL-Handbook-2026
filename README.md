@@ -1,45 +1,45 @@
 # Oracle SQL Handbook 2026
 
-Guide francophone de preparation et de reference pour Oracle SQL.
+Guide francophone, pédagogique et progressif pour apprendre Oracle SQL et préparer la certification Oracle Database SQL Certified Associate.
 
-## Etat du projet
+## Objectif
 
-- Version actuelle : 0.1.0
-- Chapitre disponible : Chapitre 1 - Fondements des bases de donnees relationnelles
-- Format source principal : Markdown
-- Format de lecture : PDF imprimable A4
+Ce dépôt contient les sources du livre, les exercices, les exemples SQL, les illustrations et les versions PDF prêtes à imprimer.
 
-## Structure
+## Public visé
+
+- candidats à une certification Oracle SQL ;
+- analystes de données ;
+- développeurs et administrateurs débutants ou intermédiaires ;
+- professionnels souhaitant disposer d'un manuel de référence en français.
+
+## Ligne éditoriale
+
+Le livre suit un style pédagogique et visuel :
+
+1. le concept ;
+2. pourquoi il existe ;
+3. son utilisation en entreprise ;
+4. ce qui est important pour la certification ;
+5. les pièges et bonnes pratiques.
+
+## Structure du dépôt
 
 ```text
-manuscript/       Sources Markdown des chapitres
-pdf/              PDF prets a imprimer
-assets/images/    Illustrations et schemas
-examples/         Scripts SQL d'exemple
-exercises/        Exercices et corriges
-.github/workflows Automatisation future
+manuscript/      Sources du livre en Markdown
+templates/       Modèles de chapitres, exercices et QCM
+assets/          Couverture, icônes et diagrammes
+examples/        Scripts SQL testables
+pdf/             PDF prêts à imprimer
+releases/        Notes et archives de versions
 ```
 
-## Commencer
+## Version actuelle
 
-1. Telecharger ou cloner le depot.
-2. Ouvrir `pdf/Oracle_SQL_Handbook_2026_Chapitre_01_v0.1.pdf`.
-3. Consulter la source dans `manuscript/chapter-01/chapter-01.md`.
+**v0.2.1 - Fondations éditoriales**
 
-## Objectif editorial
+Cette version fixe l'arborescence, la table des matières, les conventions rédactionnelles et les modèles de contribution.
 
-Le projet vise un manuel rigoureux, progressif et imprimable comprenant :
+## Statut
 
-- explications en francais ;
-- exemples Oracle SQL ;
-- encadres "A retenir" et "Piege de l'examen" ;
-- exercices, QCM et corriges ;
-- references officielles Oracle et standards SQL.
-
-## Avertissement
-
-Ce projet est independant. Oracle et Oracle Database sont des marques d'Oracle Corporation. Le contenu ne constitue pas une publication officielle d'Oracle.
-
-## Licence
-
-La licence definitive reste a choisir. Voir `LICENSE-TODO.md`.
+Projet en cours de rédaction. Le chapitre 1 sera livré dans une version ultérieure.
