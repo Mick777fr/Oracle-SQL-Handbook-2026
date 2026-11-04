@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Horloge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Horloge">
+<meta name="theme-color" content="#0b0b0c">
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #0b0b0c; overflow: hidden;
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+  #stage { position: fixed; left: 0; top: 0; width: 100%; height: 100%; }
+
+  .card {
+    position: absolute;
+    -webkit-perspective: 1200px; perspective: 1200px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700; color: #efe9dc; text-align: center;
+  }
+  .half {
+    position: absolute; left: 0; width: 100%; height: 50%;
+    overflow: hidden; background: #1d1d1f;
+    -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  }
+  .half span { position: absolute; left: 0; width: 100%; height: 200%; display: block; }
+  .top {
+    top: 0;
+    border-radius: var(--r) var(--r) 0 0;
+    background: -webkit-linear-gradient(top, #2b2b2e, #1f1f21);
+    background: linear-gradient(to bottom, #2b2b2e, #1f1f21);
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,.55);
+  }
+  .top span { top: 0; }
+  .bottom {
+    bottom: 0;
+    border-radius: 0 0 var(--r) var(--r);
+    background: -webkit-linear-gradient(top, #19191b, #232326);
+    background: linear-gradient(to bottom, #19191b, #232326);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.04);
+  }
+  .bottom span { bottom: 0; }
+
+  /* Volets mobiles */
+  .leaf { display: none; z-index: 3; }
+  .lt { -webkit-transform-origin: 50% 100%; transform-origin: 50% 100%; }
+  .lb { -webkit-transform-origin: 50% 0; transform-origin: 50% 0; }
+  .flip .leaf { display: block; }
+  .flip .lt { animation: flipTop .3s ease-in forwards; }
+  .flip .lb { animation: flipBottom .3s .3s ease-out both; }
+  @keyframes flipTop {
+    from { transform: rotateX(0deg); }
+    to   { transform: rotateX(-90deg); }
+  }
+  @keyframes flipBottom {
+    from { transform: rotateX(90deg); }
+    to   { transform: rotateX(0deg); }
+  }
+
+  /* Charnières sur les côtés */
+  .card:before, .card:after {
+    content: ""; position: absolute; top: 50%; z-index: 5;
+    width: var(--pin); height: var(--pinh); margin-top: calc(var(--pinh) / -2);
+    background: #060607;
+  }
+  .card:before { left: 0; border-radius: 0 3px 3px 0; }
+  .card:after  { right: 0; border-radius: 3px 0 0 3px; }
+
+  .dot { position: absolute; border-radius: 50%; background: #efe9dc; opacity: .85; display: none; }
+
+  #veil {
+    position: fixed; left: 0; top: 0; width: 100%; height: 100%;
+    background: #000; opacity: 0; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="veil"></div>
+
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var veil = document.getElementById('veil');
+  var cards = [];
+  var dots = [];
+  var i;
+
+  function build() {
+    for (i = 0; i < 4; i++) {
+      var el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML =
+        '<div class="half top"><span></span></div>' +
+        '<div class="half bottom"><span></span></div>' +
+        '<div class="half top leaf lt"><span></span></div>' +
+        '<div class="half bottom leaf lb"><span></span></div>';
+      stage.appendChild(el);
+      cards.push({ el: el, spans: el.getElementsByTagName('span'), cur: null, timer: null });
+    }
+    for (i = 0; i < 2; i++) {
+      var d = document.createElement('div');
+      d.className = 'dot';
+      stage.appendChild(d);
+      dots.push(d);
+    }
+  }
+
+  function layout() {
+    var W = window.innerWidth, H = window.innerHeight;
+    var landscape = W > H;
+    var pad = Math.round(Math.min(W, H) * 0.045);
+    var gap = Math.round(pad * 0.6);
+    var groupGap = Math.round(pad * (landscape ? 2.2 : 1.0));
+    var cw, ch, pos = [], k;
+
+    if (landscape) {
+      cw = (W - 2 * pad - 2 * gap - groupGap) / 4;
+      ch = H - 2 * pad;
+      pos = [
+        [pad, pad],
+        [pad + cw + gap, pad],
+        [pad + 2 * cw + gap + groupGap, pad],
+        [pad + 3 * cw + 2 * gap + groupGap, pad]
+      ];
+    } else {
+      cw = (W - 2 * pad - gap) / 2;
+      ch = (H - 2 * pad - groupGap) / 2;
+      var y2 = pad + ch + groupGap;
+      pos = [
+        [pad, pad], [pad + cw + gap, pad],
+        [pad, y2],  [pad + cw + gap, y2]
+      ];
+    }
+
+    var fs = Math.min(ch * 0.8, cw * 1.35);
+    for (k = 0; k < 4; k++) {
+      var s = cards[k].el.style;
+      s.left = pos[k][0] + 'px';
+      s.top = pos[k][1] + 'px';
+      s.width = cw + 'px';
+      s.height = ch + 'px';
+      s.fontSize = fs + 'px';
+      s.lineHeight = ch + 'px';
+      s.setProperty('--r', Math.round(Math.min(cw, ch) * 0.07) + 'px');
+      s.setProperty('--pin', Math.max(4, Math.round(cw * 0.025)) + 'px');
+      s.setProperty('--pinh', Math.max(14, Math.round(ch * 0.07)) + 'px');
+    }
+
+    // Deux points entre heures et minutes (paysage uniquement)
+    var ds = Math.max(6, Math.round(pad * 0.9));
+    for (k = 0; k < 2; k++) {
+      var st = dots[k].style;
+      if (landscape) {
+        st.display = 'block';
+        st.width = st.height = ds + 'px';
+        st.left = Math.round(pad + 2 * cw + gap + groupGap / 2 - ds / 2) + 'px';
+        st.top = Math.round(H * (k ? 0.64 : 0.36) - ds / 2) + 'px';
+      } else {
+        st.display = 'none';
+      }
+    }
+  }
+
+  function setCard(c, d, animate) {
+    if (c.cur === d) return;
+    var sp = c.spans, old = c.cur;
+    if (!animate || old === null) {
+      sp[0].textContent = sp[1].textContent = sp[2].textContent = sp[3].textContent = d;
+      c.cur = d;
+      return;
+    }
+    sp[0].textContent = d;    // haut fixe : nouveau chiffre
+    sp[1].textContent = old;  // bas fixe : ancien chiffre
+    sp[2].textContent = old;  // volet haut qui tombe
+    sp[3].textContent = d;    // volet bas qui se déplie
+    c.el.className = 'card';
+    void c.el.offsetWidth;
+    c.el.className = 'card flip';
+    c.cur = d;
+    clearTimeout(c.timer);
+    c.timer = setTimeout(function () {
+      sp[1].textContent = d;
+      c.el.className = 'card';
+    }, 650);
+  }
+
+  var last = '';
+  function tick(animate) {
+    var n = new Date();
+    var h = n.getHours(), m = n.getMinutes();
+    var str = (h < 10 ? '0' : '') + h + (m < 10 ? '0' : '') + m;
+    if (str === last) return;
+    last = str;
+    for (var k = 0; k < 4; k++) setCard(cards[k], str.charAt(k), animate);
+  }
+
+  // Un toucher change la luminosité (3 niveaux), mémorisée sur l'appareil
+  var levels = [0, 0.5, 0.8];
+  var level = 0;
+  try { level = parseInt(localStorage.getItem('dim'), 10) || 0; } catch (e) {}
+  if (level < 0 || level >= levels.length) level = 0;
+  veil.style.opacity = levels[level];
+  document.addEventListener('click', function () {
+    level = (level + 1) % levels.length;
+    veil.style.opacity = levels[level];
+    try { localStorage.setItem('dim', String(level)); } catch (e) {}
+  });
+  document.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+
+  build();
+  layout();
+  tick(false);
+  setInterval(function () { tick(true); }, 500);
+  window.addEventListener('resize', layout);
+  window.addEventListener('orientationchange', function () { setTimeout(layout, 200); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { layout(); tick(false); } });
+})();
+</script>
+</body>
+</html>
